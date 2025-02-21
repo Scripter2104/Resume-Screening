@@ -1,11 +1,23 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from jobApp.models import Job
-from candidateApp.models import S_candidate
-from rest_framework.decorators import api_view
+from candidateApp.models import S_candidate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ]
 import json
+from rest_framework.response import Response
+from rest_framework.decorators import api_view     
 
-@api_view['POST']
+
+@api_view(['POST'])
+def signup(request,*args, **kwargs):
+    return Response('Welcome to the job portal')
+
+@api_view(['POST'])
+def login(request,*args, **kwargs):
+    return Response('Welcome to the job portal')
+
+
+
+@api_view(['POST'])
 def jobDescView(request,*args, **kwargs):
     data = json.loads(request.data)
     job_title = data['job_title']
@@ -18,7 +30,7 @@ def jobDescView(request,*args, **kwargs):
 
     return render(request, '', {})
 
-@api_view['GET']
+@api_view(['GET'])
 def display_top_candidate(request,*args, **kwargs):
     job_title= request.GET.get('job_title')
 
@@ -27,12 +39,12 @@ def display_top_candidate(request,*args, **kwargs):
     return render(request, '', {'candidates':candidates_name})
 
 
-@api_view['GET']
+@api_view(['GET'])
 def candidate_info(request,*args, **kwargs):
     candidate_id= request.GET.get('candidate_id')
     candidate = S_candidate.objects.get(id=candidate_id)
     return render(request, '', {'candidate':candidate})
-     
+
 
     
     
