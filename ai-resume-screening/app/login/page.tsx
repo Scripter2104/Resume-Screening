@@ -1,30 +1,38 @@
-"use client"
+"use client";
 
-import type React from "react"
-import axios from "axios"
-
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link"
+import type React from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 export default function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try{
-    await axios.post("/api/login", { email, password })
-    }
-    catch (error) {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/login/", {
+        email,
+        password,
+      });
+      console.log(response.status);
+      if (response.status === 200) {
+        console.log("Login successful");
+        const user = response.data.user;
+        localStorage.setItem("user_id", user.id);
+        router.push("/recruiter/dashboard");
+      }
+    } catch (error) {
       console.error("Login failed", error);
     }
-
-    console.log("Login submitted", { email, password })
-  }
+    console.log("Login submitted", { email, password });
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -36,7 +44,9 @@ export default function Login() {
       >
         <div className="text-center">
           <h1 className="text-2xl font-bold">Login to Your Account</h1>
-          <p className="text-gray-500 dark:text-gray-400">Welcome back! Please enter your details.</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Welcome back! Please enter your details.
+          </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
@@ -68,13 +78,15 @@ export default function Login() {
         <div className="text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Don't have an account?{" "}
-            <Link href="/signup" className="font-medium text-primary hover:underline">
+            <Link
+              href="/signup"
+              className="font-medium text-primary hover:underline"
+            >
               Sign up
             </Link>
           </p>
         </div>
       </motion.div>
     </div>
-  )
+  );
 }
-

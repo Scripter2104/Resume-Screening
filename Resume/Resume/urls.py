@@ -18,12 +18,12 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.urls import path
 from jobApp.views import signup, jobDescView, display_top_candidate, candidate_info,login
-from candidateApp.views import signup
+
 from . import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('/api/login',login),
-    path('/api/signup',signup),
+    path('api/login/',login),
+    path('api/signup/',signup),
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

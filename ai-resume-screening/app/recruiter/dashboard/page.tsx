@@ -1,21 +1,25 @@
-"use client"
-
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlusIcon, SearchIcon, UsersIcon } from "lucide-react"
-import Link from "next/link"
+"use client";
+import { useEffect } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PlusIcon, SearchIcon, UsersIcon } from "lucide-react";
+import Link from "next/link";
 
 export default function RecruiterDashboard() {
-  const [searchTerm, setSearchTerm] = useState("")
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("user_id");
+    setUserId(storedUserId);
+  }, []);
   const jobs = [
     { id: 1, title: "Software Engineer", applicants: 25, newApplicants: 5 },
     { id: 2, title: "Data Scientist", applicants: 18, newApplicants: 3 },
     { id: 3, title: "UX Designer", applicants: 30, newApplicants: 8 },
-  ]
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -75,8 +79,12 @@ export default function RecruiterDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Total Applicants: {job.applicants}</span>
-                  <span className="text-sm font-medium text-green-500">New: +{job.newApplicants}</span>
+                  <span className="text-sm font-medium">
+                    Total Applicants: {job.applicants}
+                  </span>
+                  <span className="text-sm font-medium text-green-500">
+                    New: +{job.newApplicants}
+                  </span>
                 </div>
                 <Button asChild className="w-full">
                   <Link href={`/recruiter/job/${job.id}`}>
@@ -89,6 +97,5 @@ export default function RecruiterDashboard() {
         ))}
       </div>
     </div>
-  )
+  );
 }
-

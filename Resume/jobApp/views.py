@@ -1,20 +1,40 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from jobApp.models import Job
-from candidateApp.models import S_candidate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ]
+from candidateApp.models import S_candidate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 import json
+from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view     
+from rest_framework.decorators import api_view 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+from .models import Login
+from .models import Login
+
+@api_view(['POST'])
+def signup(request, *args, **kwargs):
+    data = request.data
+    l1 = Login.objects.create(user_name=data.get('email'), password=data.get('password'))
+    return Response({"message": "User created successfully", "user_id": l1.id}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
-def signup(request,*args, **kwargs):
-    return Response('Welcome to the job portal')
-
-@api_view(['POST'])
-def login(request,*args, **kwargs):
-    return Response('Welcome to the job portal')
-
+def login(request, *args, **kwargs):
+    data = request.data
+    try:
+        l1 = Login.objects.get(user_name=data.get('email'))
+        if l1.password == data.get('password'):
+            return Response(
+                {
+                    "message": "Login success",
+                    "user": l1.id
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response({"message": "Invalid password"}, status=status.HTTP_401_UNAUTHORIZED)
+    except Login.DoesNotExist:
+        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])

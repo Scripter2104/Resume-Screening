@@ -1,31 +1,38 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link"
-import axios from "axios"
+import type React from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import axios from "axios";
 
 export default function Signup() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    try{
-      await axios.post("/api/signup", { email, password, confirmPassword })
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/signup/", {
+        email,
+        password,
+        confirmPassword,
+      });
+      if (response.status === 200) {
+        console.log("Login successful");
+        const user = response.data.user;
+        localStorage.setItem("user_id", user);
+        router.push("/recruiter/dashboard");
       }
-      catch (error) {
-        console.error("signup failed", error)
-      }
-    console.log("Signup submitted", { email, password, confirmPassword })
-  }
+    } catch (error) {
+      console.error("signup failed", error);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -37,7 +44,9 @@ export default function Signup() {
       >
         <div className="text-center">
           <h1 className="text-2xl font-bold">Create an Account</h1>
-          <p className="text-gray-500 dark:text-gray-400">Sign up to get started with AI Resume Screening</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Sign up to get started with AI Resume Screening
+          </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
@@ -80,13 +89,15 @@ export default function Signup() {
         <div className="text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
+            <Link
+              href="/login"
+              className="font-medium text-primary hover:underline"
+            >
               Log in
             </Link>
           </p>
         </div>
       </motion.div>
     </div>
-  )
+  );
 }
-
