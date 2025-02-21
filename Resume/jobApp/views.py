@@ -1,17 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from job.models import Job
-from candidate.models import S_candidate
+from jobApp.models import Job
+from candidateApp.models import S_candidate
 from rest_framework.decorators import api_view
 import json
-
-GEMINI_API_KEY="AIzaSyDw8-6adGxA6ZWS51sszyPefbhEOA24LoY"
-llm = Gemini(api_key = GEMINI_API_KEY)
-
-def homeView(request,*args,**kwargs):
-        
-
-    return HttpResponse("<h1>Hello</h1>")
 
 @api_view['POST']
 def jobDescView(request,*args, **kwargs):

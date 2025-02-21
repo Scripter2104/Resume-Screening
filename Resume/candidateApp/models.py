@@ -1,5 +1,5 @@
 from django.db import models
-from job.models import Job
+from jobApp.models import Job
 from django.contrib.postgres.fields import JSONField
 
 class S_candidate(models.Model):
