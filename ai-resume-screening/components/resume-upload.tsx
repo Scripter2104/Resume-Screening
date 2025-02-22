@@ -1,41 +1,59 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { UploadIcon } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { UploadIcon } from "lucide-react";
+import axios from "axios";
 
 export function ResumeUpload() {
-  const [file, setFile] = useState<File | null>(null)
+  const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFile(e.target.files[0])
+      setFile(e.target.files[0]);
     }
-  }
+  };
 
   const handleUpload = async () => {
-    if (!file) return
+    if (!file) return;
 
-    // Here you would typically send the file to your server
-    // For this example, we'll just log it
-    console.log("Uploading file:", file.name)
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const responce = await axios.post(
+        "http://127.0.0.1:8000/api/upload/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(responce.data);
+    } catch (e) {
+      console.log(e);
+    }
+    console.log("Uploading file:", file.name);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Simulating an API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    console.log("File uploaded successfully")
-    setFile(null)
-  }
+    console.log("File uploaded successfully");
+    setFile(null);
+  };
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="resume">Upload Resume (PDF or DOCX)</Label>
-        <Input id="resume" type="file" accept=".pdf,.docx" onChange={handleFileChange} />
+        <Input
+          id="resume"
+          type="file"
+          accept=".pdf,.docx"
+          onChange={handleFileChange}
+        />
       </div>
       {file && (
         <Button onClick={handleUpload} className="w-full">
@@ -43,6 +61,5 @@ export function ResumeUpload() {
         </Button>
       )}
     </div>
-  )
+  );
 }
-

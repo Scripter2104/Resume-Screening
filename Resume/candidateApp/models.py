@@ -22,7 +22,7 @@ class candidate(models.Model):
     email = models.TextField(null=True, blank=True)
     linkedin = models.URLField(null=True, blank=True)
     github = models.URLField(null=True, blank=True)
-    resume = models.FileField(upload_to='resume', null=True, blank=True)
+    resume = models.FileField(upload_to='resume/', null=True, blank=True)
     location = models.TextField(max_length=50, null=True, blank=True)
     education = models.JSONField(default=list, blank=True)  
     skills = models.JSONField(default=list, blank=True)

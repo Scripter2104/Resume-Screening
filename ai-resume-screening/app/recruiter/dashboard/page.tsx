@@ -7,12 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusIcon, SearchIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 
 export default function RecruiterDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
   useEffect(() => {
-    const storedUserId = localStorage.getItem("user_id");
+    const storedUserId = searchParams.get("userId");
     setUserId(storedUserId);
   }, []);
   const jobs = [
@@ -31,7 +34,12 @@ export default function RecruiterDashboard() {
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <Link href="/recruiter/post-job">
+              <Link
+                href={{
+                  pathname: "/recruiter/post-job",
+                  query: { userId },
+                }}
+              >
                 <PlusIcon className="mr-2 h-4 w-4" /> Post New Job
               </Link>
             </Button>

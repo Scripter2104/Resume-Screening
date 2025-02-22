@@ -26,8 +26,7 @@ export default function Signup() {
       if (response.status === 200) {
         console.log("Login successful");
         const user = response.data.user;
-        localStorage.setItem("user_id", user);
-        router.push("/recruiter/dashboard");
+        router.push(`/recruiter/dashboard?userId=${encodeURIComponent(user)}`);
       }
     } catch (error) {
       console.error("signup failed", error);

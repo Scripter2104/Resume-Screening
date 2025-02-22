@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.urls import path
-from jobApp.views import signup, jobDescView, display_top_candidate, candidate_info,login
+from jobApp.views import signup, jobDescView, display_top_candidate, candidate_info,login,post_job,extract_jobs,chatbot
+from candidateApp.views import upload
 
 from . import settings
 
@@ -25,5 +26,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/login/',login),
     path('api/signup/',signup),
+    path('api/post-job/',post_job),
+    path('api/upload/',upload),
+    path('api/extract/',extract_jobs),
+    path('api/chatbot/',chatbot)
 
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+
+
+

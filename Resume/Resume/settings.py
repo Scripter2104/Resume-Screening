@@ -73,9 +73,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Resume.wsgi.application'
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React frontend URL
-]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

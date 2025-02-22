@@ -6,6 +6,7 @@ class Login(models.Model):
 
 class Job(models.Model):
     job_title = models.TextField(max_length=20, null=True, blank=True)
+    job_company=models.TextField(max_length=20,null=True,blank=True)
     user = models.ForeignKey(Login,on_delete=models.CASCADE)
     job_description = models.TextField(null=True, blank=True)
     skill_required = models.JSONField(default=list, blank=True)  

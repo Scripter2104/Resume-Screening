@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BriefcaseIcon, SearchIcon } from "lucide-react"
-import { ResumeUpload } from "@/components/resume-upload"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BriefcaseIcon, SearchIcon } from "lucide-react";
+import { ResumeUpload } from "@/components/resume-upload";
 
 export default function CandidateDashboard() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
   const jobs = [
     { id: 1, title: "Software Engineer", company: "Tech Co", matchScore: 85 },
     { id: 2, title: "Data Scientist", company: "Data Corp", matchScore: 72 },
     { id: 3, title: "UX Designer", company: "Design Inc", matchScore: 90 },
-  ]
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -70,9 +70,13 @@ export default function CandidateDashboard() {
                 <CardTitle>{job.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-500 dark:text-gray-400 mb-2">{job.company}</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-2">
+                  {job.company}
+                </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Match Score: {job.matchScore}%</span>
+                  <span className="text-sm font-medium">
+                    Match Score: {job.matchScore}%
+                  </span>
                   <Button size="sm">
                     <BriefcaseIcon className="mr-2 h-4 w-4" /> Apply
                   </Button>
@@ -83,6 +87,5 @@ export default function CandidateDashboard() {
         ))}
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,105 +1,152 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Slider } from "@/components/ui/slider"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+"use client";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function PostJob() {
-  const [jobTitle, setJobTitle] = useState("")
-  const [jobDescription, setJobDescription] = useState("")
-  
-  // Main weights
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  useEffect(() => {
+    const storedUserId = searchParams.get("userId");
+    setUserId(storedUserId);
+    console.log(storedUserId);
+  }, []);
   const [weights, setWeights] = useState({
     education: 25,
     workHistory: 25,
     technicalSkills: 25,
-    softSkills: 25
-  })
+    softSkills: 25,
+  });
 
-  // Education sub-weights
   const [educationWeights, setEducationWeights] = useState({
     gpa: 50,
-    universityRank: 50
-  })
+    universityRank: 50,
+  });
 
-  // Work history sub-weights
   const [workHistoryWeights, setWorkHistoryWeights] = useState({
     jobRoles: 50,
-    projects: 50
-  })
+    projects: 50,
+  });
 
-  // Skills state with better structure
   const [skills, setSkills] = useState({
     technical: [{ name: "", weight: 0 }],
-    soft: [{ name: "", weight: 0 }]
-  })
+    soft: [{ name: "", weight: 0 }],
+  });
 
   // Weight validation
-  const [weightError, setWeightError] = useState("")
+  const [weightError, setWeightError] = useState("");
 
   // Validate total weights equals 100
   useEffect(() => {
-    const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0)
+    const totalWeight = Object.values(weights).reduce(
+      (sum, weight) => sum + weight,
+      0
+    );
     if (totalWeight !== 100) {
-      setWeightError(`Total weight must be 100%. Current total: ${totalWeight}%`)
+      setWeightError(
+        `Total weight must be 100%. Current total: ${totalWeight}%`
+      );
     } else {
-      setWeightError("")
+      setWeightError("");
     }
-  }, [weights])
+  }, [weights]);
 
   // Handle main weight changes
-  const handleWeightChange = (category: keyof typeof weights, value: number) => {
-    const otherCategories = Object.keys(weights).filter(key => key !== category) as Array<keyof typeof weights>
-    const remainingWeight = 100 - value
-    const scaleFactor = remainingWeight / (100 - weights[category])
-    
-    const newWeights = { ...weights }
-    newWeights[category] = value
-    
-    otherCategories.forEach(key => {
-      newWeights[key] = Math.round(weights[key] * scaleFactor)
-    })
-    
-    setWeights(newWeights)
-  }
+  const handleWeightChange = (
+    category: keyof typeof weights,
+    value: number
+  ) => {
+    const otherCategories = Object.keys(weights).filter(
+      (key) => key !== category
+    ) as Array<keyof typeof weights>;
+    const remainingWeight = 100 - value;
+    const scaleFactor = remainingWeight / (100 - weights[category]);
+
+    const newWeights = { ...weights };
+    newWeights[category] = value;
+
+    otherCategories.forEach((key) => {
+      newWeights[key] = Math.round(weights[key] * scaleFactor);
+    });
+
+    setWeights(newWeights);
+  };
 
   // Handle skills management
-  const addSkill = (type: 'technical' | 'soft') => {
-    setSkills(prev => ({
+  const addSkill = (type: "technical" | "soft") => {
+    setSkills((prev) => ({
       ...prev,
-      [type]: [...prev[type], { name: "", weight: 0 }]
-    }))
-  }
+      [type]: [...prev[type], { name: "", weight: 0 }],
+    }));
+  };
 
-  const updateSkill = (type: 'technical' | 'soft', index: number, field: 'name' | 'weight', value: string | number) => {
-    const newSkills = { ...skills }
-    newSkills[type][index][field] = value
-    setSkills(newSkills)
-  }
+  const updateSkill = (
+    type: "technical" | "soft",
+    index: number,
+    field: "name" | "weight",
+    value: string | number
+  ) => {
+    setSkills((prevSkills) => ({
+      ...prevSkills,
+      [type]: prevSkills[type].map((skill, i) =>
+        i === index ? { ...skill, [field]: value } : skill
+      ),
+    }));
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (weightError) {
-      alert("Please adjust weights to total 100% before submitting")
-      return
+      alert("Please adjust weights to total 100% before submitting");
+      return;
     }
-    
-    console.log("Job posted", {
+
+    const jobData = {
       jobTitle,
       jobDescription,
       weights,
+      userId,
       educationWeights,
       workHistoryWeights,
-      skills
-    })
-  }
+      skills,
+    };
+
+    try {
+      console.log(userId);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/post-job/",
+        jobData
+      );
+      if (response.status == 200) {
+        alert("Job posted successfully!");
+        console.log("Job posted", response.data);
+        router.push(
+          `/recruiter/dashboard?userId=${encodeURIComponent(userId ?? "")}`
+        );
+      }
+    } catch (error) {
+      console.error("Error posting job:");
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -148,11 +195,16 @@ export default function PostJob() {
                 {Object.entries(weights).map(([key, value]) => (
                   <div key={key} className="space-y-2">
                     <Label className="flex justify-between">
-                      {key.replace(/([A-Z])/g, ' $1').trim()}: {value}%
+                      {key.replace(/([A-Z])/g, " $1").trim()}: {value}%
                     </Label>
                     <Slider
                       value={[value]}
-                      onValueChange={([newValue]) => handleWeightChange(key as keyof typeof weights, newValue)}
+                      onValueChange={([newValue]) =>
+                        handleWeightChange(
+                          key as keyof typeof weights,
+                          newValue
+                        )
+                      }
                       max={100}
                       step={1}
                       className="my-4"
@@ -169,14 +221,20 @@ export default function PostJob() {
                   <AccordionContent className="space-y-4">
                     {Object.entries(educationWeights).map(([key, value]) => (
                       <div key={key} className="space-y-2">
-                        <Label>{key.replace(/([A-Z])/g, ' $1').trim()}: {value}%</Label>
+                        <Label>
+                          {key.replace(/([A-Z])/g, " $1").trim()}: {value}%
+                        </Label>
                         <Slider
                           value={[value]}
-                          onValueChange={([newValue]) => setEducationWeights(prev => ({
-                            ...prev,
-                            [key]: newValue,
-                            [Object.keys(educationWeights).find(k => k !== key)!]: 100 - newValue
-                          }))}
+                          onValueChange={([newValue]) =>
+                            setEducationWeights((prev) => ({
+                              ...prev,
+                              [key]: newValue,
+                              [Object.keys(educationWeights).find(
+                                (k) => k !== key
+                              )!]: 100 - newValue,
+                            }))
+                          }
                           max={100}
                           step={1}
                         />
@@ -191,14 +249,20 @@ export default function PostJob() {
                   <AccordionContent className="space-y-4">
                     {Object.entries(workHistoryWeights).map(([key, value]) => (
                       <div key={key} className="space-y-2">
-                        <Label>{key.replace(/([A-Z])/g, ' $1').trim()}: {value}%</Label>
+                        <Label>
+                          {key.replace(/([A-Z])/g, " $1").trim()}: {value}%
+                        </Label>
                         <Slider
                           value={[value]}
-                          onValueChange={([newValue]) => setWorkHistoryWeights(prev => ({
-                            ...prev,
-                            [key]: newValue,
-                            [Object.keys(workHistoryWeights).find(k => k !== key)!]: 100 - newValue
-                          }))}
+                          onValueChange={([newValue]) =>
+                            setWorkHistoryWeights((prev) => ({
+                              ...prev,
+                              [key]: newValue,
+                              [Object.keys(workHistoryWeights).find(
+                                (k) => k !== key
+                              )!]: 100 - newValue,
+                            }))
+                          }
                           max={100}
                           step={1}
                         />
@@ -208,33 +272,52 @@ export default function PostJob() {
                 </AccordionItem>
 
                 {/* Skills Sections */}
-                {['technical', 'soft'].map((skillType) => (
+                {["technical", "soft"].map((skillType) => (
                   <AccordionItem key={skillType} value={skillType}>
                     <AccordionTrigger>
-                      {skillType.charAt(0).toUpperCase() + skillType.slice(1)} Skills
+                      {skillType.charAt(0).toUpperCase() + skillType.slice(1)}{" "}
+                      Skills
                     </AccordionTrigger>
                     <AccordionContent>
                       <div className="space-y-4">
-                        {skills[skillType as keyof typeof skills].map((skill, index) => (
-                          <div key={index} className="space-y-2">
-                            <Input
-                              placeholder={`Enter ${skillType} skill`}
-                              value={skill.name}
-                              onChange={(e) => updateSkill(skillType as 'technical' | 'soft', index, 'name', e.target.value)}
-                              className="mb-2"
-                            />
-                            <Label>Weight: {skill.weight}%</Label>
-                            <Slider
-                              value={[skill.weight]}
-                              onValueChange={([newValue]) => updateSkill(skillType as 'technical' | 'soft', index, 'weight', newValue)}
-                              max={100}
-                              step={1}
-                            />
-                          </div>
-                        ))}
+                        {skills[skillType as keyof typeof skills].map(
+                          (skill, index) => (
+                            <div key={index} className="space-y-2">
+                              <Input
+                                placeholder={`Enter ${skillType} skill`}
+                                value={skill.name}
+                                onChange={(e) =>
+                                  updateSkill(
+                                    skillType as "technical" | "soft",
+                                    index,
+                                    "name",
+                                    e.target.value
+                                  )
+                                }
+                                className="mb-2"
+                              />
+                              <Label>Weight: {skill.weight}%</Label>
+                              <Slider
+                                value={[skill.weight]}
+                                onValueChange={([newValue]) =>
+                                  updateSkill(
+                                    skillType as "technical" | "soft",
+                                    index,
+                                    "weight",
+                                    newValue
+                                  )
+                                }
+                                max={100}
+                                step={1}
+                              />
+                            </div>
+                          )
+                        )}
                         <Button
                           type="button"
-                          onClick={() => addSkill(skillType as 'technical' | 'soft')}
+                          onClick={() =>
+                            addSkill(skillType as "technical" | "soft")
+                          }
                           className="mt-4"
                         >
                           Add {skillType} Skill
@@ -245,14 +328,11 @@ export default function PostJob() {
                 ))}
               </Accordion>
 
-              <Button type="submit" className="w-full">
-                Post Job
-              </Button>
+              <Button type="submit" className="w-full"></Button>
             </form>
           </CardContent>
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }
-

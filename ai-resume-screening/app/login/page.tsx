@@ -25,8 +25,7 @@ export default function Login() {
       if (response.status === 200) {
         console.log("Login successful");
         const user = response.data.user;
-        localStorage.setItem("user_id", user.id);
-        router.push("/recruiter/dashboard");
+        router.push(`/recruiter/dashboard?userId=${encodeURIComponent(user)}`);
       }
     } catch (error) {
       console.error("Login failed", error);
